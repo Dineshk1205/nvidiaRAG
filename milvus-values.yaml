@@ -1,0 +1,22 @@
+# Step 9: Milvus standalone (one etcd, one MinIO-compatible store, one Milvus pod).
+# These are the same settings as the --set flags used in the verified install.
+cluster:
+  enabled: false
+pulsarv3:
+  enabled: false
+standalone:
+  messageQueue: woodpecker
+woodpecker:
+  enabled: true
+streaming:
+  enabled: true
+etcd:
+  replicaCount: 1
+minio:
+  mode: standalone
+  # MinIO stopped publishing public images (Docker Hub and quay.io both refuse pulls),
+  # so the chart's default image fails with ImagePullBackOff.
+  # pgsty/silo is a community fork of MinIO that worked with this chart.
+  image:
+    repository: docker.io/pgsty/silo
+    tag: RELEASE.2026-09-16T00-00-00Z

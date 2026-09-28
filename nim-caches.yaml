@@ -1,0 +1,40 @@
+# Step 6: download the three models into persistent volumes (namespace nim-service).
+# Apply BEFORE enabling GPU time-slicing.
+apiVersion: apps.nvidia.com/v1alpha1
+kind: NIMCache
+metadata: {name: meta-llama3-8b-instruct, namespace: nim-service}
+spec:
+  source:
+    ngc:
+      modelPuller: nvcr.io/nim/meta/llama-3.1-8b-instruct:latest
+      pullSecret: ngc-secret
+      authSecret: ngc-api-secret
+      model: {engine: vllm, tensorParallelism: "1"}
+  storage: {pvc: {create: true, storageClass: "", size: "80Gi", volumeAccessMode: ReadWriteOnce}}
+---
+# No model filter here: on A100 PCIe a filter such as "engine: tensorrt" matched no profile.
+apiVersion: apps.nvidia.com/v1alpha1
+kind: NIMCache
+metadata: {name: nv-embedqa-e5-v5, namespace: nim-service}
+spec:
+  source:
+    ngc:
+      modelPuller: nvcr.io/nim/nvidia/nv-embedqa-e5-v5:latest
+      pullSecret: ngc-secret
+      authSecret: ngc-api-secret
+  storage: {pvc: {create: true, storageClass: "", size: "50Gi", volumeAccessMode: ReadWriteOnce}}
+---
+# The download-provider variables make the weights come from NGC (your NGC key) instead of Hugging Face.
+apiVersion: apps.nvidia.com/v1alpha1
+kind: NIMCache
+metadata: {name: llama-nemotron-rerank-1b-v2, namespace: nim-service}
+spec:
+  source:
+    ngc:
+      modelPuller: nvcr.io/nim/nvidia/llama-nemotron-rerank-1b-v2:latest
+      pullSecret: ngc-secret
+      authSecret: ngc-api-secret
+  env:
+  - {name: NIM_MODEL_DOWNLOAD_PROVIDER, value: "ngc"}
+  - {name: NIM_ENGINE_MODEL_DOWNLOAD_PROVIDER, value: "ngc"}
+  storage: {pvc: {create: true, storageClass: "", size: "50Gi", volumeAccessMode: ReadWriteOnce}}

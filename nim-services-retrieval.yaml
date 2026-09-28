@@ -1,0 +1,26 @@
+# Step 8a: embedding and reranker services. Start these first, then the LLM.
+# Service names must stay as written: rag-values.yaml points at them.
+apiVersion: apps.nvidia.com/v1alpha1
+kind: NIMService
+metadata: {name: nv-embedqa-e5-v5, namespace: nim-service}
+spec:
+  image: {repository: nvcr.io/nim/nvidia/nv-embedqa-e5-v5, tag: "latest", pullPolicy: IfNotPresent, pullSecrets: [ngc-secret]}
+  authSecret: ngc-api-secret
+  storage: {nimCache: {name: nv-embedqa-e5-v5, profile: ''}}
+  replicas: 1
+  resources: {limits: {nvidia.com/gpu: 1}}
+  expose: {service: {type: ClusterIP, port: 8000}}
+---
+apiVersion: apps.nvidia.com/v1alpha1
+kind: NIMService
+metadata: {name: llama-nemotron-rerank-1b-v2, namespace: nim-service}
+spec:
+  image: {repository: nvcr.io/nim/nvidia/llama-nemotron-rerank-1b-v2, tag: "latest", pullPolicy: IfNotPresent, pullSecrets: [ngc-secret]}
+  authSecret: ngc-api-secret
+  storage: {nimCache: {name: llama-nemotron-rerank-1b-v2}}
+  env:
+  - {name: NIM_MODEL_DOWNLOAD_PROVIDER, value: "ngc"}
+  - {name: NIM_ENGINE_MODEL_DOWNLOAD_PROVIDER, value: "ngc"}
+  replicas: 1
+  resources: {limits: {nvidia.com/gpu: 1}}
+  expose: {service: {type: ClusterIP, port: 8000}}

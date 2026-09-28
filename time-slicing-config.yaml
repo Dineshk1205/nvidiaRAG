@@ -1,0 +1,16 @@
+# Step 7: turn 2 physical GPUs into 4 schedulable slots (no memory isolation between pods).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: time-slicing-config-all
+  namespace: gpu-operator
+data:
+  any: |-
+    version: v1
+    flags:
+      migStrategy: none
+    sharing:
+      timeSlicing:
+        resources:
+        - name: nvidia.com/gpu
+          replicas: 2

@@ -1,0 +1,17 @@
+# Step 10: settings for the RAG app chart (rag-app-multiturn-chatbot-24.08).
+# Each URL is an in-cluster service name: <service>.<namespace>.svc.cluster.local:<port>.
+# Model names must match what each service returns at /v1/models.
+query:
+  env:
+    APP_VECTORSTORE_URL: "http://milvus.milvus.svc.cluster.local:19530"
+    APP_VECTORSTORE_NAME: "milvus"
+    APP_LLM_SERVERURL: "meta-llama3-8b-instruct.nim-service.svc.cluster.local:8000"
+    APP_LLM_MODELNAME: meta/llama-3.1-8b-instruct
+    APP_LLM_MODELENGINE: nvidia-ai-endpoints
+    APP_EMBEDDINGS_SERVERURL: "nv-embedqa-e5-v5.nim-service.svc.cluster.local:8000"
+    APP_EMBEDDINGS_MODELNAME: nvidia/nv-embedqa-e5-v5
+    APP_EMBEDDINGS_MODELENGINE: nvidia-ai-endpoints
+    APP_RANKING_SERVERURL: "llama-nemotron-rerank-1b-v2.nim-service.svc.cluster.local:8000"
+    APP_RANKING_MODELNAME: nvidia/llama-nemotron-rerank-1b-v2
+    APP_RANKING_MODELENGINE: nvidia-ai-endpoints
+    COLLECTION_NAME: multi_turn_rag
